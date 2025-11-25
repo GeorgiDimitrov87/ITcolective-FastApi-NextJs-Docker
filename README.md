@@ -1,25 +1,10 @@
 ## Next.js FastAPI Template
 
-<a href="https://www.vintasoftware.com/blog/next-js-fastapi-template"><img src="docs/images/banner.png" alt="Next.js FastAPI Template" width="auto"></a>
+<a href="https://www.itcolective.com"></a>
 <p align="center">
     <em>Next.js FastAPI Template: Python + Modern TypeScript stack with Zod validation.</em>
 </p>
-<p align="center">
-<a href="https://github.com/vintasoftware/nextjs-fastapi-template/actions/workflows/ci.yml" target="_blank">
-    <img src="https://github.com/vintasoftware/nextjs-fastapi-template/actions/workflows/ci.yml/badge.svg" alt="CI">
-</a>
-<a href="https://coveralls.io/github/vintasoftware/nextjs-fastapi-template" target="_blank">
-    <img src="https://coveralls.io/repos/github/vintasoftware/nextjs-fastapi-template/badge.svg" alt="Coverage">
-</a>
-</p>
 
----
-
-**Documentation**: <a href="https://vintasoftware.github.io/nextjs-fastapi-template/" target="_blank">https://vintasoftware.github.io/nextjs-fastapi-template/</a>
-
-**Source Code**: <a href="https://github.com/vintasoftware/nextjs-fastapi-template/" target="_blank">https://github.com/vintasoftware/nextjs-fastapi-template/</a>
-
----
 
 The Next.js FastAPI Template provides a solid foundation for scalable, high-performance web applications, following clean architecture and best practices. It simplifies development by integrating FastAPI, Pydantic, and Next.js with TypeScript and Zod, ensuring end-to-end type safety and schema validation between frontend and backend.
 
@@ -50,21 +35,3 @@ This template features a carefully selected set of technologies to ensure effici
 - Docker Compose – Consistent environments for development and production.
 - Pre-commit hooks – Automated code linting, formatting, and validation before commits.
 - Vercel Deployment – Serverless backend and scalable frontend, deployable with minimal configuration.
-
-This is a partial list of the technologies included in the template. For a complete overview, visit our [Technology selection](https://vintasoftware.github.io/nextjs-fastapi-template/technology-selection/) page.
-
-## Get Started
-
-To use this template, visit our [Get Started](https://vintasoftware.github.io/nextjs-fastapi-template/get-started/) and follow the steps.
-
-## Using the template? Let's talk!
-
-We’re always curious to see how the community builds on top of it and where it’s being used. To collaborate:
-
-- Join the conversation on [GitHub Discussions](https://github.com/vintasoftware/nextjs-fastapi-template/discussions)
-- Report bugs or suggest improvements via [issues](https://github.com/vintasoftware/nextjs-fastapi-template/issues)
-- Check the [Contributing](https://vintasoftware.github.io/nextjs-fastapi-template/contributing/) guide to get involved
-
-This project is maintained by [Vinta Software](https://www.vinta.com.br/) and is actively used in production systems we build for clients. Talk to our expert consultants — get a free technical review: contact@vinta.com.br.
-
-*Disclaimer: This project is not affiliated with Vercel.*
