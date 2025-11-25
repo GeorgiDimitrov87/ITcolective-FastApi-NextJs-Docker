@@ -1,72 +1,102 @@
+version: '3.8'
+
 services:
   backend:
     build:
       context: fastapi_backend
+    env_file:
+      - .env
     environment:
-      - OPENAPI_OUTPUT_FILE=./shared-data/openapi.json
-      - DATABASE_URL=postgresql+asyncpg://postgres:password@db:5432/mydatabase
-      - TEST_DATABASE_URL=postgresql+asyncpg://postgres:password@db:5433/testdatabase
-      - MAIL_SERVER=mailhog
+      - DATABASE_URL=${DATABASE_URL}
+      - TEST_DATABASE_URL=${TEST_DATABASE_URL}
+      - OPENAPI_OUTPUT_FILE=${OPENAPI_OUTPUT_FILE:-./shared-data/openapi.json}
+      - MAIL_SERVER=${MAIL_SERVER:-mailhog}
     ports:
       - "8000:8000"
     networks:
       - my_network
     volumes:
-      - ./fastapi_backend:/app
+      - ./fastapi_backend/app:/app/app
+      - ./fastapi_backend/api:/app/api
+      - ./fastapi_backend/alembic_migrations:/app/alembic_migrations
+      - ./fastapi_backend/commands:/app/commands
+      - ./fastapi_backend/tests:/app/tests
+      - ./fastapi_backend/alembic.ini:/app/alembic.ini:ro
       - fastapi-venv:/app/.venv
       - ./local-shared-data:/app/shared-data
     depends_on:
       - db
+
   db:
     image: postgres:17
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: mydatabase
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-mydatabase}
     ports:
       - "5432:5432"
     networks:
       - my_network
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
   db_test:
     image: postgres:17
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: testdatabase
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: test_${POSTGRES_DB:-mydatabase}
     ports:
       - "5433:5432"
     networks:
       - my_network
     restart: always
+
   frontend:
     build:
       context: ./nextjs-frontend
-    user: node
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - NEXT_TELEMETRY_DISABLED=1
+      - API_BASE_URL=${API_BASE_URL:-http://backend:8000}
+      - OPENAPI_OUTPUT_FILE=${OPENAPI_OUTPUT_FILE:-./shared-data/openapi.json}
     ports:
       - "3000:3000"
     networks:
       - my_network
-    environment:
-      NODE_ENV: development
-      API_BASE_URL: http://backend:8000
-      OPENAPI_OUTPUT_FILE: ./shared-data/openapi.json
     volumes:
-      - ./nextjs-frontend:/app
-      - nextjs-node-modules:/app/node_modules
+      # Mount ONLY source code directories as read-only to prevent file system events
+      - ./nextjs-frontend/app:/app/app:ro
+      - ./nextjs-frontend/components:/app/components:ro
+      - ./nextjs-frontend/lib:/app/lib:ro
+      - ./nextjs-frontend/public:/app/public:ro
+      
+      # Share data directory
       - ./local-shared-data:/app/shared-data
+      
+      # Use named volumes - DO NOT mount .next or node_modules from host
+      - nextjs-node-modules:/app/node_modules
+      - nextjs-next-cache:/app/.next
+    working_dir: /app
+
   mailhog:
     image: mailhog/mailhog
     ports:
-      - "1025:1025" # SMTP server
-      - "8025:8025" # Web UI
+      - "1025:1025"  # SMTP server
+      - "8025:8025"  # Web UI
     networks:
       - my_network
 
 volumes:
   postgres_data:
   nextjs-node-modules:
+  nextjs-next-cache:
   fastapi-venv:
 
 networks:

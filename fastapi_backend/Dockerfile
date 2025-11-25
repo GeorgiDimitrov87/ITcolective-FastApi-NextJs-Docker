@@ -3,31 +3,31 @@ FROM python:3.12-bookworm
 # Set the working directory
 WORKDIR /app
 
-# The uv installer requires curl (and certificates) to download the release archive
-RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
-# Download the latest uv installer
-ADD https://astral.sh/uv/install.sh /uv-installer.sh
+# Copy only the necessary files for dependency installation
+COPY README.md pyproject.toml ./
 
-# Run the uv installer then remove it
-RUN sh /uv-installer.sh && rm /uv-installer.sh
+# Create and activate virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:${PATH}"
 
-# Ensure the installed binary is on the `PATH`
-ENV PATH="/root/.local/bin/:$PATH"
+# Install Python dependencies using pip
+RUN pip install --upgrade pip && \
+    pip install -e .
 
-# Copy dependency files first to leverage Docker caching
-COPY pyproject.toml uv.lock ./
-
-# Install dependencies using uv
-RUN uv sync --frozen
-
-ENV PATH="/app/.venv/bin:$PATH"
-
-# Copy the rest of the application code
+# Copy the rest of the application
 COPY . .
 
-# Expose the application port
+# Set permissions for the start script
+RUN chmod +x start.sh && \
+    sed -i 's/\r$//' start.sh
+
 EXPOSE 8000
 
-# Command to run the application
-CMD ["./start.sh"]
+# Start the application
+CMD ["sh", "-c", "cd /app && ./start.sh"]
